@@ -110,8 +110,8 @@ a:hover { text-decoration: underline; }
 
 .hero-grid {
     display: grid;
-    grid-template-columns: 240px 1fr auto;
-    gap: 44px;
+    grid-template-columns: 220px 1fr auto;
+    gap: 34px;
     align-items: start;
 }
 
@@ -431,47 +431,119 @@ a:hover { text-decoration: underline; }
 }
 .scale-pane .goal u { text-decoration: none; }
 
-/* ---------- tabbed modules ---------- */
-.tabs-nav {
+/* ---------- section rail : table of contents ----------
+   wide screens  -> vertical dashes in the right margin, name on hover
+   narrow screens-> horizontal sticky bar at the top, names always visible  */
+.rail {
+    position: fixed;
+    z-index: 50;
     display: flex;
-    flex-wrap: wrap;
-    gap: 28px;
-    margin-bottom: 30px;
-    border-bottom: 1px solid var(--line);
 }
-.tab-btn {
-    appearance: none;
-    cursor: pointer;
+.rail-item { display: flex; text-decoration: none; }
+.rail-item:hover { text-decoration: none; }
+.rail-label {
     font-family: var(--font-mono);
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 0.66rem;
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--muted);
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
-    border-radius: 0;
-    padding: 4px 0 12px;
-    margin-bottom: -1px;
-    transition: color 0.18s ease, border-color 0.18s ease;
-}
-.tab-btn:hover {
-    color: var(--ink);
-}
-.tab-btn.active {
-    color: var(--primary);
-    border-bottom-color: var(--primary);
+    letter-spacing: 0.1em;
+    white-space: nowrap;
 }
 
-.tab-panel { display: none; animation: fade 0.3s ease; }
-.tab-panel.active { display: block; }
-@keyframes fade {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
+/* ---- narrow: sticky top bar ---- */
+@media (max-width: 1239px) {
+    body { padding-top: 43px; }
+    .rail {
+        top: 0;
+        left: 0;
+        right: 0;
+        flex-direction: row;
+        padding: 0 14px;
+        background: rgba(255, 255, 255, 0.93);
+        -webkit-backdrop-filter: saturate(180%) blur(8px);
+        backdrop-filter: saturate(180%) blur(8px);
+        border-bottom: 1px solid var(--line);
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+    }
+    .rail::-webkit-scrollbar { display: none; }
+    .rail-dash { display: none; }
+    .rail-label {
+        padding: 12px 10px;
+        color: var(--muted);
+        border-bottom: 2px solid transparent;
+        transition: color 0.18s ease, border-color 0.18s ease;
+    }
+    .rail-item.active .rail-label {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+    }
+    /* keep an anchored heading clear of the bar */
+    .section { scroll-margin-top: 52px; }
 }
 
-.tab-panel h3 {
+/* ---- wide: vertical dashes in the right margin ---- */
+@media (min-width: 1240px) {
+    .rail {
+        right: 26px;
+        top: 50%;
+        transform: translateY(-50%);
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 13px;
+    }
+    .rail-item {
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 3px 0;
+    }
+    .rail-dash {
+        width: 11px;
+        height: 3px;
+        border-radius: 2px;
+        background: var(--line-blue);
+        transition: width 0.22s ease, background-color 0.22s ease;
+    }
+    .rail-label {
+        color: var(--primary);
+        /* a real chip, so the label reads as an overlay instead of loose text
+           floating on top of the column underneath */
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: var(--r-chip);
+        box-shadow: var(--shadow-sm);
+        padding: 2px 8px;
+        opacity: 0;
+        transform: translateX(4px);
+        transition: opacity 0.18s ease, transform 0.18s ease;
+        pointer-events: none;
+    }
+    /* only the item under the cursor names itself */
+    .rail-item:hover .rail-label,
+    .rail-item:focus-visible .rail-label {
+        opacity: 1;
+        transform: none;
+    }
+    .rail-item:hover .rail-dash,
+    .rail-item:focus-visible .rail-dash {
+        width: 22px;
+        background: var(--accent);
+    }
+    /* current section: dash only — a pinned label would sit on the text forever */
+    .rail-item.active .rail-dash {
+        width: 22px;
+        background: var(--primary);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rail-dash, .rail-label { transition: none; }
+}
+
+/* ---------- flat modules (publications / projects / teaching / services) ---------- */
+.module h3 {
     font-family: var(--font-mono);
     font-weight: 600;
     font-size: 0.95rem;
@@ -482,7 +554,7 @@ a:hover { text-decoration: underline; }
     padding-bottom: 7px;
     border-bottom: 1px solid var(--line);
 }
-.tab-panel h3:first-child { margin-top: 0; }
+.module > h3:first-of-type { margin-top: 0; }
 
 /* publication / generic lists */
 .pub-list, .plain-list {
