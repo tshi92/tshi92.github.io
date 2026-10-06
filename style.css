@@ -663,13 +663,21 @@ a:hover { text-decoration: underline; }
     justify-content: center;
     gap: 4px 0;
 }
-.footer-links > * + *::before {
+.footer-links > * + *::before,
+.footer-profiles > * + *::before {
     content: "\00b7";
     margin: 0 9px;
     color: var(--line-blue);
 }
 .footer-links a { color: var(--muted); }
 .footer-links a:hover { color: var(--accent); text-decoration: none; }
+.footer-profiles { display: inline-flex; white-space: nowrap; }
+/* phones: email and profile links on separate lines, so no line starts with a separator */
+@media (max-width: 600px) {
+    .footer-links { flex-direction: column; align-items: center; }
+    .footer-links > * + *::before { content: none; }
+    .footer-profiles > * + *::before { margin: 0 6px; }
+}
 .visitor-globe { width: 80px; flex: none; }
 .visitor-globe .mmvst_globe { width: 80px !important; }
 
