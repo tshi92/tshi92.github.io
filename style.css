@@ -642,6 +642,36 @@ a:hover { text-decoration: underline; }
     padding: 22px 0;
     margin-top: 30px;
 }
+/* homepage footer: text + small visitor globe (MapMyVisitors, sized via w=) on one row */
+.footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    padding: 0 16px;
+}
+.footer-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 0;
+}
+.footer-links > * + *::before {
+    content: "\00b7";
+    margin: 0 9px;
+    color: var(--line-blue);
+}
+.footer-links a { color: var(--muted); }
+.footer-links a:hover { color: var(--accent); text-decoration: none; }
+.visitor-globe { width: 80px; flex: none; }
+.visitor-globe .mmvst_globe { width: 80px !important; }
 
 /* ---------- blog (index + article pages) ---------- */
 .blog-index { max-width: 800px; }   /* match .article width */
