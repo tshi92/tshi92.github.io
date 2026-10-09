@@ -642,7 +642,7 @@ a:hover { text-decoration: underline; }
     padding: 22px 0;
     margin-top: 30px;
 }
-/* homepage footer: text + small visitor globe (MapMyVisitors, sized via w=) on one row */
+/* homepage footer: text + small visitor map (VisitorDots) on one row */
 .footer-row {
     display: flex;
     align-items: center;
@@ -678,8 +678,8 @@ a:hover { text-decoration: underline; }
     .footer-links > * + *::before { content: none; }
     .footer-profiles > * + *::before { margin: 0 6px; }
 }
-.visitor-globe { width: 80px; flex: none; }
-.visitor-globe .mmvst_globe { width: 80px !important; }
+.visitor-map { flex: none; width: 180px; line-height: 0; }
+.visitor-map img { display: inline-block; vertical-align: top; width: 100%; height: auto; border-radius: var(--r-chip); }
 
 /* ---------- blog (index + article pages) ---------- */
 .blog-index { max-width: 800px; }   /* match .article width */
