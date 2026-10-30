@@ -391,14 +391,14 @@
 
 <!-- ===================== SECTION RAIL ===================== -->
 <nav class="rail" aria-label="Sections">
-    <a class="rail-item" href="#about"><span class="rail-label">About</span><span class="rail-dash"></span></a>
-    <a class="rail-item" href="#openings"><span class="rail-label">Openings</span><span class="rail-dash"></span></a>
-    <a class="rail-item" href="#news"><span class="rail-label">News</span><span class="rail-dash"></span></a>
-    <a class="rail-item" href="#research"><span class="rail-label">Research</span><span class="rail-dash"></span></a>
-    <a class="rail-item" href="#publications"><span class="rail-label">Publications</span><span class="rail-dash"></span></a>
-    <a class="rail-item" href="#projects"><span class="rail-label">Projects</span><span class="rail-dash"></span></a>
-    <a class="rail-item" href="#teaching"><span class="rail-label">Teaching</span><span class="rail-dash"></span></a>
-    <a class="rail-item" href="#talks"><span class="rail-label">Services</span><span class="rail-dash"></span></a>
+    <a class="rail-item" href="#about"><span class="rail-track"><span class="rail-knob"></span></span><span class="rail-label">About</span></a>
+    <a class="rail-item" href="#openings"><span class="rail-track"><span class="rail-knob"></span></span><span class="rail-label">Openings</span></a>
+    <a class="rail-item" href="#news"><span class="rail-track"><span class="rail-knob"></span></span><span class="rail-label">News</span></a>
+    <a class="rail-item" href="#research"><span class="rail-track"><span class="rail-knob"></span></span><span class="rail-label">Research</span></a>
+    <a class="rail-item" href="#publications"><span class="rail-track"><span class="rail-knob"></span></span><span class="rail-label">Publications</span></a>
+    <a class="rail-item" href="#projects"><span class="rail-track"><span class="rail-knob"></span></span><span class="rail-label">Projects</span></a>
+    <a class="rail-item" href="#teaching"><span class="rail-track"><span class="rail-knob"></span></span><span class="rail-label">Teaching</span></a>
+    <a class="rail-item" href="#talks"><span class="rail-track"><span class="rail-knob"></span></span><span class="rail-label">Services</span></a>
 </nav>
 
 <footer class="footer">
@@ -428,16 +428,39 @@
         if (!items.length) return;
         var targets = items.map(function (a) { return document.querySelector(a.getAttribute('href')); });
 
-        function sync() {
-            var line = window.scrollY + window.innerHeight * 0.3;
-            var current = 0;
-            targets.forEach(function (el, i) {
-                if (el && el.getBoundingClientRect().top + window.scrollY <= line) current = i;
+        // Each section's "anchor point" is the scroll position the browser lands on
+        // when its link is clicked (heading at the top, minus scroll-margin). The
+        // current section is the last one whose anchor point has been reached, so
+        // clicking an item always lights that item, even for very short sections.
+        function anchorPoints() {
+            var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            return targets.map(function (el) {
+                if (!el) return 0;
+                var margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+                var top = el.getBoundingClientRect().top + window.scrollY - margin;
+                return Math.min(top, maxScroll);
             });
-            if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4) {
-                current = items.length - 1;
-            }
+        }
+
+        function sync() {
+            var points = anchorPoints();
+            var y = window.scrollY;
+            var tolerance = 40;   // a heading a few px below the top still counts as reached
+            var current = 0;
+            points.forEach(function (p, i) { if (p <= y + tolerance) current = i; });
+            var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            if (y >= maxScroll - 4) current = items.length - 1;
             items.forEach(function (a, i) { a.classList.toggle('active', i === current); });
+
+            // wide screens: the active item's dot slides down its track between this
+            // section's anchor point (0) and the next one's (1); the last section
+            // runs out at the bottom of the page
+            var from = points[current];
+            var to = current + 1 < points.length ? points[current + 1] : maxScroll;
+            var progress = to > from ? (y - from) / (to - from) : 1;
+            progress = Math.max(0, Math.min(1, progress));
+            if (current === items.length - 1 && y >= maxScroll - 4) progress = 1;
+            items[current].style.setProperty('--p', progress.toFixed(4));
 
             // narrow screens render the rail as a horizontally scrollable top bar,
             // so keep the current section's chip inside the visible strip
